@@ -4,7 +4,7 @@ const configSlice = createSlice({
   name: "config",
   initialState: {
     isDarkMode: true,
-    isSidebarOpen: true,
+    isSidebarOpen: false,
   },
   reducers: {
     toggleDarkMode: (state, action) => {
@@ -13,9 +13,12 @@ const configSlice = createSlice({
     toggleSidebar: (state, action) => {
       state.isSidebarOpen = !state.isSidebarOpen;
     },
+    closeSidebar: (state, action) =>{
+      state.isSidebarOpen = false;
+    }
   },
 });
 
-export const { toggleDarkMode, toggleSidebar } = configSlice.actions;
+export const { toggleDarkMode, toggleSidebar, closeSidebar} = configSlice.actions;
 
 export default configSlice.reducer;

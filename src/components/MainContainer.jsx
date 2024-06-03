@@ -7,7 +7,7 @@ const MainContainer = () => {
   const isSidebarOpen = useSelector(store => store.config.isSidebarOpen);
   
   return (
-    <div className={`${isSidebarOpen ? "w-10/12" : "w-11/12"} bg-slate-300 p-4 flex flex-col gap-6`}>
+    <div className={`h-fit bg-white dark:bg-black p-4 flex flex-col gap-6 ${isSidebarOpen && "blur-sm pointer-events-none select-none"}`}>
       <ButtonList />
       <VideosContainer />
     </div>
