@@ -7,6 +7,7 @@ import {
   RAPID_OPTIONS,
   RAPID_SEARCH_SUGGESTIONS_API,
 } from "../utils/constatnts";
+import { addCacheSearchSuggestions } from "../utils/slices/searchSlice";
 
 const Header = () => {
   const [searchText, setSearchText] = useState("");
@@ -15,10 +16,20 @@ const Header = () => {
 
   const dispatch = useDispatch();
 
+  const cachedSearchSuggestions = useSelector(
+    (store) => store.search.cachedSearchSuggestions
+  );
+
   const isDarkMode = useSelector((store) => store.config.isDarkMode);
 
   useEffect(() => {
-    const timer = setTimeout(() => getSearchSuggestions(), 200);
+    const timer = setTimeout(() => {
+      if (cachedSearchSuggestions[searchText]) {
+        setSearchSuggestions(cachedSearchSuggestions[searchText]);
+      } else {
+        getSearchSuggestions();
+      }
+    }, 200);
     return () => {
       clearTimeout(timer);
     };
@@ -32,6 +43,11 @@ const Header = () => {
       );
       const data = await res.json();
       setSearchSuggestions(data.results);
+      dispatch(
+        addCacheSearchSuggestions({
+          [searchText]: data.results,
+        })
+      );
     } catch (err) {
       console.log(err);
     }
