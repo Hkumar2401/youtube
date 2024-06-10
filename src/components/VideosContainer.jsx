@@ -10,10 +10,14 @@ const VideosContainer = () => {
 
   if (popularVideos === null) return;
   return (
-    <div className="w-full h-full p-5  flex flex-wrap">
+    <div className="w-full h-full p-5  flex flex-wrap mt-32">
       {popularVideos.map((video) => {
         return (
-          <Link className="w-[19%] h-[350px] mb-5 mx-[7px]" to={'watch?v='+video.id} key={video.id}>
+          <Link
+            className="w-[19%] h-[450px] mb-5 mx-[7px]"
+            to={"watch?v=" + video.id}
+            key={video.id}
+          >
             <VideoCard data={video} />
           </Link>
         );

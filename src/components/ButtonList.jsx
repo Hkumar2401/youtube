@@ -40,7 +40,7 @@ const ButtonList = () => {
   };
 
   return (
-    <div className="w-full bg-white dark:bg-black p-4 flex  items-center justify-between">
+    <div className="w-full bg-white dark:bg-black p-4 flex  items-center justify-between fixed top-14 z-40">
       <div className="px-2 ">
           <button
             onClick={() => handleClick("left")}

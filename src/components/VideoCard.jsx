@@ -10,7 +10,7 @@ const VideoCard = ({ data }) => {
   const totalDays = useDaysConverter(publishedAt);
 
   return (
-    <div className="w-full h-full bg-white dark:bg-black cursor-pointer">
+    <div className="w-full h-full bg-white dark:bg-black cursor-pointer ">
       <div className="image w-full relative">
         <p className="text-sm bg-black text-white p-1 bg-opacity-70 select-none absolute right-2 bottom-8">{duration.replace('PT', '').replace('M', ' : ').replace('S', '')}</p>
         <img className="w-full rounded-xl" src={thumbnails.high.url} alt="" />

@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainContainer from "./components/MainContainer";
 import WatchPage from "./components/WatchPage";
 import ErrorPage from "./components/ErrorPage";
+import SearchResultsContainer from "./components/SearchResultsContainer";
 
 function App() {
   const isDarkMode = useSelector((store) => store.config.isDarkMode);
@@ -28,6 +29,10 @@ function App() {
           path: "/watch",
           element: <WatchPage />,
         },
+        {
+          path: "/results",
+          element: <SearchResultsContainer />
+        }
       ],
       errorElement: <ErrorPage />,
     },

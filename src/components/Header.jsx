@@ -5,9 +5,15 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   RAPID_OPTIONS,
+  RAPID_SEARCH_RESULTS_API,
   RAPID_SEARCH_SUGGESTIONS_API,
 } from "../utils/constatnts";
-import { addCacheSearchSuggestions } from "../utils/slices/searchSlice";
+import {
+  addCacheSearchResults,
+  addCacheSearchSuggestions,
+  addDisplaySearchResults,
+} from "../utils/slices/searchSlice";
+import SearchSuggestion from "./SearchSuggestion";
 
 const Header = () => {
   const [searchText, setSearchText] = useState("");
@@ -18,6 +24,10 @@ const Header = () => {
 
   const cachedSearchSuggestions = useSelector(
     (store) => store.search.cachedSearchSuggestions
+  );
+
+  const cachedSearchResults = useSelector(
+    (store) => store.search.cachedSearchResults
   );
 
   const isDarkMode = useSelector((store) => store.config.isDarkMode);
@@ -53,8 +63,30 @@ const Header = () => {
     }
   };
 
+  const getSearchResults = async (suggestion) => {
+    try {
+      if (cachedSearchResults[suggestion]) {
+        dispatch(addDisplaySearchResults(cachedSearchResults[suggestion]));
+      } else {
+        const res = await fetch(
+          RAPID_SEARCH_RESULTS_API + suggestion,
+          RAPID_OPTIONS
+        );
+        const data = await res.json();
+        dispatch(addDisplaySearchResults(data.contents));
+        dispatch(
+          addCacheSearchResults({
+            [suggestion]: data.contents,
+          })
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
-    <div className="flex justify-between items-center text-black dark:text-white dark:bg-black py-2">
+    <div className="flex justify-between items-center w-full z-50 text-black dark:text-white dark:bg-black py-3 fixed top-0 bg-white">
       <div className="flex items-center justify-center ml-5">
         <div
           onClick={() => dispatch(toggleSidebar())}
@@ -76,36 +108,41 @@ const Header = () => {
         </Link>
       </div>
 
-      <div className="flex justify-center flex-col relative">
+      <div className="flex justify-center flex-col ">
         <div className="flex justify-center items-center">
           <input
             placeholder="Search"
             className="text-black dark:text-white bg-white  dark:bg-black w-[500px] h-8 p-5 rounded-s-3xl focus:outline focus:outline-blue-400 focus:-outline-offset-1 border-[1px] border-solid border-[#cccccc] dark:border-zinc-700"
             type="text"
             value={searchText}
+            spellCheck="false"
             onChange={(e) => setSearchText(e.target.value)}
             onFocus={() => setShowSearchSuggestions(true)}
             onBlur={() => setShowSearchSuggestions(false)}
           />
-          <button className="bg-[#f0f0f0] hover:bg-[#e5e5e5]  dark:bg-[#222222] dark:hover:bg-[#111111] active:bg-[#c1c1c1] dark:active:bg-[#555555] p-2 w-20 rounded-e-3xl border-[1px] border-s-0 border-solid border-[$cccccc] dark:border-zinc-700">
-            <i className="fa-solid fa-magnifying-glass text-black dark:text-white"></i>
-          </button>
+          <Link to={"results?search_query=" + searchText}  onClick={()=> getSearchResults(searchText)}>
+            <button className="bg-[#f0f0f0] hover:bg-[#e5e5e5]  dark:bg-[#222222] dark:hover:bg-[#111111] active:bg-[#c1c1c1] dark:active:bg-[#555555] p-2 w-20 rounded-e-3xl border-[1px] border-s-0 border-solid border-[$cccccc] dark:border-zinc-700">
+              <i className="fa-solid fa-magnifying-glass text-black dark:text-white"></i>
+            </button>
+          </Link>
         </div>
         <div
-          className={`bg-white dark:bg-black border-[1px] border-[#f0f0f0] dark:border-[#222222] text-black dark:text-white w-[500px] absolute top-12 py-3 z-50 rounded-lg shadow-2xl ${
+          className={`bg-white dark:bg-black border-[1px] border-[#f0f0f0] dark:border-[#222222] text-black dark:text-white w-[500px] absolute top-14 py-3 z-50 rounded-lg shadow-2xl ${
             showSearchSuggestions ? "block" : "hidden"
           }`}
         >
-          {searhSuggestions?.map((suggestion) => {
-            return (
-              <Link to="" key={suggestion}>
-                <div className="flex px-5 py-1 items-center hover:bg-[#f0f0f0] dark:hover:bg-[#222222]">
-                  <i className="fa-solid fa-magnifying-glass text-black dark:text-white mr-4 text-sm"></i>
-                  <p className="">{suggestion}</p>
-                </div>
-              </Link>
-            );
-          })}
+          {searhSuggestions?.map((suggestion) => (
+            <Link
+              key={suggestion}
+              to={"results?search_query=" + suggestion}
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
+              onClick={() => getSearchResults(suggestion)}
+            >
+              <SearchSuggestion suggestion={suggestion} />
+            </Link>
+          ))}
         </div>
       </div>
 
